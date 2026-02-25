@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="rw">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GODE Network - Login & Register</title>
+  <meta name="theme-color" content="#00ff00">
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="data:application/manifest+json,{
+    \"name\": \"GODE Network\",
+    \"short_name\": \"GODE\",
+    \"start_url\": \".\",
+    \"display\": \"standalone\",
+    \"background_color\": \"#000\",
+    \"theme_color\": \"#00ff00\",
+    \"icons\": [
+      {\"src\": \"https://via.placeholder.com/192?text=G\", \"sizes\": \"192x192\", \"type\": \"image/png\"},
+      {\"src\": \"https://via.placeholder.com/512?text=G\", \"sizes\": \"512x512\", \"type\": \"image/png\"}
+    ]
+  }">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@400;700&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      margin:0; background:#000; color:#0f0; font-family:'Roboto',sans-serif;
+      overflow:hidden; height:100vh; display:flex; flex-direction:column;
+      background:radial-gradient(circle at center, #001a00 0%, #000 70%);
+    }
+    .container{flex:1; max-width:420px; margin:0 auto; padding:20px; overflow-y:auto;}
+    .logo{
+      width:100px; height:100px; margin:20px auto; border-radius:50%;
+      background:conic-gradient(from 0deg, #0f0, #0ff, #0f0);
+      display:flex; align-items:center; justify-content:center; position:relative;
+      box-shadow:0 0 60px #0f0, 0 0 120px #0ff, inset 0 0 40px #001a00;
+      animation:pulse 2s infinite, spin 6s linear infinite;
+      border:4px solid #0f0;
+    }
+    .logo::before{
+      content:'G'; font-family:'Orbitron',sans-serif; font-size:3em; font-weight:900;
+      color:#000; text-shadow:0 0 20px #0f0;
+    }
+    .logo::after{
+      content:''; position:absolute; width:70px; height:70px; border:3px solid #0ff;
+      border-radius:50%; animation:spin 3s linear infinite reverse;
+    }
+    .subtitle{font-size:1.1em; margin:10px 0; opacity:0.9; text-align:center;}
+    .card{
+      background:rgba(0,255,0,0.08); border:2px solid #0f0; border-radius:20px;
+      padding:22px; margin:18px 0; box-shadow:0 0 35px rgba(0,255,0,0.3);
+      backdrop-filter:blur(5px);
+    }
+    input, select{
+      width:100%; padding:16px; margin:12px 0; border-radius:15px; border:2px solid #0f0;
+      background:#000; color:#0f0; font-size:1.2em; text-align:center; font-family:'Orbitron';
+      transition:0.3s; outline:none;
+    }
+    input:focus, select:focus{border-color:#0ff; box-shadow:0 0 20px #0ff;}
+    button{
+      background:#0f0; color:#000; padding:18px; font-size:1.4em; font-weight:700;
+      border:none; border-radius:15px; margin:15px 0; width:100%; cursor:pointer;
+      box-shadow:0 0 30px #0f0; transition:0.3s; font-family:'Orbitron';
+    }
+    button:active{transform:scale(0.96);}
+    button.red{background:#ff0033; box-shadow:0 0 30px #f00;}
+    button.share{background:#00bfff; box-shadow:0 0 30px #0ff;}
+    .circle{
+      width:160px; height:160px; margin:25px auto; border:6px solid #0f0; border-radius:50%;
+      display:flex; align-items:center; justify-content:center; position:relative;
+      background:radial-gradient(circle, #001a00, #000);
+      box-shadow:0 0 60px #0f0, inset 0 0 40px #0f0; animation:pulse 2s infinite;
+    }
+    .circle::before{
+      content:''; position:absolute; width:120px; height:120px; border:3px solid #0ff;
+      border-radius:50%; animation:spin 4s linear infinite;
+    }
+    .hashrate{font-size:1.6em; font-weight:900; margin:8px 0; text-align:center;}
+    .balance{font-size:2.6em; font-weight:900; margin:15px 0; color:#0ff; text-align:center;}
+    .progress{
+      height:10px; background:rgba(0,255,0,0.2); border-radius:5px; margin:18px 0; overflow:hidden;
+      box-shadow:0 0 15px rgba(0,255,0,0.3);
+    }
+    .fill{background:#0f0; height:100%; width:0%; transition:width 0.6s ease;}
+    .stats{font-size:1em; margin:10px 0; opacity:0.8; font-weight:500; text-align:center;}
+    .tab-bar{
+      position:fixed; bottom:0; width:100%; background:#000; border-top:2px solid #0f0;
+      display:flex; padding:10px 0; backdrop-filter:blur(10px);
+    }
+    .tab-btn{flex:1; padding:14px; font-size:1em; background:transparent; color:#0f0; border:none; cursor:pointer; font-weight:700;}
+    .tab-btn.active{color:#000; background:#0f0; border-radius:10px; margin:0 8px; box-shadow:0 0 20px #0f0;}
+    .share-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:20px 0;}
+    .share-btn{
+      background:rgba(0,255,0,0.2); border:2px solid #0f0; border-radius:15px;
+      padding:15px; font-size:1.2em; cursor:pointer; transition:0.3s; text-align:center;
+    }
+    .share-btn:active{transform:scale(0.9);}
+    .hidden{display:none;}
+    .referral-code{
+      background:#000; border:2px dashed #0f0; border-radius:15px; padding:15px;
+      font-size:1.3em; font-weight:700; margin:15px 0; text-align:center; word-break:break-all;
+    }
+    .copy-notif{
+      position:fixed; top:20px; left:50%; transform:translateX(-50%);
+      background:#0f0; color:#000; padding:12px 25px; border-radius:50px;
+      font-weight:700; z-index:1000; opacity:0; transition:0.3s;
+    }
+    .email-preview{
+      background:#111; border:2px solid #0f0; border-radius:15px; padding:15px; margin:15px 0;
+      font-family:Arial; color:#fff; font-size:0.9em;
+    }
+    .email-header{color:#0ff; font-weight:bold;}
+    .email-code{
+      background:#000; color:#0f0; padding:10px; border-radius:10px; font-size:1.3em;
+      text-align:center; margin:10px 0; letter-spacing:3px; font-weight:900;
+    }
+    .link{color:#0ff; text-decoration:underline; cursor:pointer;}
+    footer{font-size:0.7em; opacity:0.6; margin:15px 0; font-weight:300; text-align:center;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    @keyframes pulse{0%,100%{box-shadow:0 0 60px #0f0}50%{box-shadow:0 0 90px #0ff}}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    @keyframes fadeIn{from{opacity:0; transform:translateY(20px)}to{opacity:1; transform:translateY(0)}}
+    .fade-in{animation:fadeIn 0.6s ease-out;}
+    .debug{
+      position:fixed; top:10px; right:10px; background:#000; color:#0f0; padding:8px; border:1px solid #0f0;
+      font-size:0.7em; border-radius:10px; z-index:999; opacity:0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- SPLASH / LOGIN FIRST -->
+    <div id="splash" class="fade-in">
+      <div class="logo"></div>
+      <p class="subtitle">Next-Gen Mining Network</p>
+      <div class="circle" style="font-size:1.4em;">Welcome</div>
+      <button onclick="showScreen('login')" style="margin-top:30px;">LOGIN</button>
+      <p class="stats" style="margin:15px 0;">No account?</p>
+      <button class="share" onclick="showScreen('register')">CREATE ACCOUNT</button>
+    </div>
+
+    <!-- LOGIN FORM (MAIN) -->
+    <div id="login" class="hidden">
+      <div class="logo"></div>
+      <p class="subtitle">Login to Your Account</p>
+      <div class="card">
+        <input type="email" id="loginEmail" placeholder="Email (Gmail)" required/>
+        <input type="text" id="loginGodeId" placeholder="Gode ID (GD...)" required/>
+        <button onclick="doLogin()">LOGIN NOW</button>
+        <p class="stats" style="margin:15px 0;">
+          <span class="link" onclick="showScreen('splash')">Back</span> | 
+          <span class="link" onclick="showScreen('register')">Create Account</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="register" class="hidden">
+      <div class="logo"></div>
+      <p class="subtitle">Create Your Account</p>
+      <div class="card">
+        <input type="text" id="regName" placeholder="Full Name" required/>
+        <input type="email" id="regEmail" placeholder="Email (Gmail)" required/>
+        <input type="text" id="regGodeId" placeholder="Gode ID (GD...)" required/>
+        <input type="text" id="regInvite" placeholder="Referral Code (optional)" />
+        <select id="regNetwork">
+          <option>Gode Network</option>
+          <option>Gode Pro</option>
+          <option>Gode Ultra</option>
+        </select>
+        <button onclick="sendRealEmail()">SEND CODE</button>
+        <p class="stats" style="margin:15px 0;">
+          <span class="link" onclick="showScreen('splash')">Back</span> | 
+          <span class="link" onclick="showScreen('login')">Login</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- VERIFY EMAIL -->
+    <div id="verify" class="hidden">
+      <div class="logo"></div>
+      <p class="subtitle">Verify Your Email</p>
+      <div class="card">
+        <p class="email-header">Code sent to your Gmail!</p>
+        <div class="email-preview">
+          <p><b>From:</b> no-reply@gode.network</p>
+          <p><b>Subject:</b> Your GODE Verification Code</p>
+          <hr style="border:1px dashed #0f0; margin:10px 0;">
+          <p>Hello <span id="emailName"></span>,</p>
+          <p>Your 6-digit code:</p>
+          <div class="email-code" id="emailCode">123456</div>
+          <p>Expires in 10 minutes.</p>
+          <p>— GODE Team</p>
+        </div>
+        <input type="text" id="verifyCode" placeholder="Enter code" maxlength="6" required/>
+        <button onclick="verifyCode()">VERIFY</button>
+        <button class="red" onclick="back('register')">BACK</button>
+      </div>
+    </div>
+
+    <!-- KYC -->
+    <div id="kyc" class="hidden">
+      <div class="logo"></div>
+      <p class="subtitle">Complete KYC</p>
+      <div class="card">
+        <input type="text" id="idNumber" placeholder="National ID" required/>
+        <input type="file" id="idPhoto" accept="image/*" />
+        <button class="share" onclick="completeKyc()">SUBMIT</button>
+        <button class="red" onclick="back('verify')">BACK</button>
+      </div>
+    </div>
+
+    <!-- MINING -->
+    <div id="mining" class="hidden">
+      <p class="stats">Welcome, <b><span id="user"></span></b>!</p>
+      <p class="stats">ID: <b><span id="godeNum"></span></b></p>
+
+      <div class="circle">
+        <div class="hashrate" id="hashrate">0.0 H/s</div>
+      </div>
+      <div class="balance" id="balance">0.0000</div>
+      <p class="stats">GODE COINS</p>
+
+      <button id="mineBtn" onclick="toggleMining()">START MINING</button>
+
+      <div class="progress"><div class="fill" id="progressFill"></div></div>
+      <p class="stats" id="timeLeft">24:00:00</p>
+
+      <div class="stats">Session: <span id="sessionTime">00:00:00</span></div>
+      <div class="stats">Total: <span id="totalMined">0.0000</span> GODE</div>
+    </div>
+
+    <!-- WALLET -->
+    <div id="wallet" class="hidden">
+      <div class="logo"></div>
+      <div class="card">
+        <p class="stats">Available</p>
+        <div class="balance" id="walletBalance">0.0000 GODE</div>
+      </div>
+      <div class="card">
+        <p class="stats">Pending</p>
+        <h2 id="pending">0.0000 GODE</h2>
+      </div>
+      <button class="share" onclick="withdraw()">WITHDRAW</button>
+      <p class="stats">Min: 100 GODE</p>
+    </div>
+
+    <!-- REFERRALS -->
+    <div id="referrals" class="hidden">
+      <div class="logo"></div>
+      <p class="subtitle">Invite & Earn</p>
+      <div class="card">
+        <p class="stats">Your Code</p>
+        <div class="referral-code" id="refCode">GODE123456</div>
+        <button onclick="copyCode()">COPY</button>
+      </div>
+      <div class="card">
+        <p class="stats">Your Link</p>
+        <div class="referral-code" id="refLink">https://gode.network/invite/...</div>
+        <button onclick="copyLink()">COPY</button>
+      </div>
+      <div class="card">
+        <p class="stats">Referrals: <b id="totalRefs">0</b></p>
+        <p class="stats">Bonus: <span id="bonusEarned">0.0000</span> GODE</p>
+      </div>
+      <p class="stats">Share:</p>
+      <div class="share-grid">
+        <div class="share-btn" onclick="share('whatsapp')">WhatsApp</div>
+        <div class="share-btn" onclick="share('facebook')">Facebook</div>
+        <div class="share-btn" onclick="share('x')">X</div>
+        <div class="share-btn" onclick="share('telegram')">Telegram</div>
+        <div class="share-btn" onclick="share('email')">Email</div>
+        <div class="share-btn" onclick="share('more')">More</div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="profile" class="hidden">
+      <div class="logo"></div>
+      <div class="card">
+        <p><b>Name:</b> <span id="pName"></span></p>
+        <p><b>Email:</b> <span id="pEmail"></span></p>
+        <p><b>ID:</b> <span id="pId"></span></p>
+        <p><b>Network:</b> <span id="pNet"></span></p>
+        <p><b>Joined:</b> <span id="pJoin"></span></p>
+        <p><b>Status:</b> <span id="pStatus">Active</span></p>
+      </div>
+      <button class="red" onclick="logout()">LOGOUT</button>
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar hidden" id="tabBar">
+    <button class="tab-btn active" onclick="show('mining')">Mining</button>
+    <button class="tab-btn" onclick="show('wallet')">Wallet</button>
+    <button class="tab-btn" onclick="show('referrals')">Refer</button>
+    <button class="tab-btn" onclick="show('profile')">Profile</button>
+  </div>
+
+  <!-- NOTIF -->
+  <div id="copyNotif" class="copy-notif">Copied!</div>
+
+  <!-- DEBUG PANEL -->
+  <div class="debug" id="debug">Debug: <span id="debugInfo">No data</span></div>
+
+  <footer>© 2025 GODE Network • Fixed Login • Host Ready</footer>
+
+  <script>
+    // === STATE ===
+    let mining = false, hashrate = 0, balance = 0, totalMined = 0, pending = 0;
+    let sessionStart = 0, startTime = Date.now(), user = {}, verificationCode = "";
+    let totalRefs = 0, bonusEarned = 0;
+    const MAX_HASH = 120, DAILY_LIMIT = 24 * 60 * 60 * 1000, REWARD_PER_HOUR = 2.8;
+    const STORAGE_KEY = 'gode_final_v13'; // Fixed key
+
+    // === SCREENS ===
+    const screens = {
+      splash: document.getElementById('splash'),
+      login: document.getElementById('login'),
+      register: document.getElementById('register'),
+      verify: document.getElementById('verify'),
+      kyc: document.getElementById('kyc'),
+      mining: document.getElementById('mining'),
+      wallet: document.getElementById('wallet'),
+      referrals: document.getElementById('referrals'),
+      profile: document.getElementById('profile')
+    };
+
+    // === DEBUG ===
+    function updateDebug() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        document.getElementById('debugInfo').innerText = `Saved: ${data.user.email} | ${data.user.id}`;
+      } else {
+        document.getElementById('debugInfo').innerText = 'No account saved';
+      }
+    }
+
+    // === INIT ===
+    window.onload = () => {
+      updateDebug();
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          if (data.user && data.user.email && data.user.id) {
+            Object.assign(window, data);
+            user = data.user;
+            totalRefs = data.totalRefs || 0;
+            bonusEarned = data.bonusEarned || 0;
+            document.getElementById('tabBar').classList.remove('hidden');
+            show('mining');
+            updateAll();
+            return;
+          }
+        } catch(e) {
+          console.error("Corrupted data:", e);
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+      screens.splash.classList.add('fade-in');
+    };
+
+    // === FLOW ===
+    function showScreen(screen) {
+      Object.values(screens).forEach(s => s.classList.add('hidden'));
+      screens[screen].classList.remove('hidden');
+      screens[screen].classList.add('fade-in');
+      updateDebug();
+    }
+
+    function back(prev) { showScreen(prev); }
+
+    // === LOGIN (FIXED) ===
+    function doLogin() {
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const id = document.getElementById('loginGodeId').value.trim().toUpperCase();
+
+      if (!email || !id || !id.startsWith('GD')) {
+        return alert("Fill email and Gode ID correctly!");
+      }
+
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        return alert("No account found! Please register first.");
+      }
+
+      let data;
+      try {
+        data = JSON.parse(saved);
+      } catch(e) {
+        return alert("Data error. Clear storage and register again.");
+      }
+
+      if (!data.user || data.user.email !== email || data.user.id !== id) {
+        return alert(`Wrong credentials!\nSaved: ${data.user?.email || 'none'} | ${data.user?.id || 'none'}\nYou entered: ${email} | ${id}`);
+      }
+
+      // SUCCESS
+      Object.assign(window, data);
+      user = data.user;
+      totalRefs = data.totalRefs || 0;
+      bonusEarned = data.bonusEarned || 0;
+      document.getElementById('tabBar').classList.remove('hidden');
+      show('mining');
+      updateAll();
+      alert(`Welcome back, ${user.name}!`);
+    }
+
+    // === REGISTER & SAVE (FIXED) ===
+    function sendRealEmail() {
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      const id = document.getElementById('regGodeId').value.trim().toUpperCase();
+      const net = document.getElementById('regNetwork').value;
+
+      if (!name || !email || !id || !id.startsWith('GD') || !email.includes('@gmail.com')) {
+        return alert("Use valid Gmail and GD ID!");
+      }
+
+      // Prevent duplicate
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const existing = JSON.parse(saved);
+        if (existing.user.email === email) {
+          return alert("This email is already registered!");
+        }
+      }
+
+      verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      user = {name, email, id, net, join: new Date().toLocaleDateString()};
+      user.refCode = 'GODE' + Math.floor(100000 + Math.random() * 900000);
+      user.refLink = `https://gode.network/invite/${user.refCode}`;
+
+      document.getElementById('emailName').innerText = name;
+      document.getElementById('emailCode').innerText = verificationCode;
+
+      showScreen('verify');
+      setTimeout(() => alert(`Code ${verificationCode} sent to ${email}`), 500);
+    }
+
+    function verifyCode() {
+      if (document.getElementById('verifyCode').value !== verificationCode) return alert("Wrong code!");
+      showScreen('kyc');
+    }
+
+    function completeKyc() {
+      if (!document.getElementById('idNumber').value) return alert("ID required!");
+      alert("KYC Approved! Account created.");
+      startTime = Date.now();
+      save(); // This now saves correctly
+      document.getElementById('tabBar').classList.remove('hidden');
+      show('mining');
+      updateDebug();
+    }
+
+    // === MINING ===
+    function toggleMining() {
+      mining = !mining;
+      const btn = document.getElementById('mineBtn');
+      if (mining) {
+        btn.innerText = "STOP"; btn.style.background = "#ff0033"; btn.style.boxShadow = "0 0 30px #f00";
+        sessionStart = Date.now(); rampHashrate(); mine();
+      } else {
+        btn.innerText = "START MINING"; btn.style.background = "#0f0"; btn.style.boxShadow = "0 0 30px #0f0";
+        stopMining();
+      }
+    }
+
+    function rampHashrate() {
+      const int = setInterval(() => {
+        if (!mining) { clearInterval(int); return; }
+        if (hashrate < MAX_HASH) {
+          hashrate = Math.min(hashrate + 2.5, MAX_HASH);
+          document.getElementById('hashrate').innerText = hashrate.toFixed(1) + " H/s";
+        }
+      }, 400);
+    }
+
+    function mine() {
+      const int = setInterval(() => {
+        if (!mining) { clearInterval(int); return; }
+        const reward = (hashrate / 3600) * (REWARD_PER_HOUR / 100);
+        balance += reward; totalMined += reward; pending += reward;
+        updateMining(); save();
+      }, 1000);
+    }
+
+    function stopMining() {
+      mining = false; hashrate = 0;
+      document.getElementById('hashrate').innerText = "0.0 H/s";
+    }
+
+    // === SHARE ===
+    function copyCode() { navigator.clipboard.writeText(user.refCode); showNotif("Code copied!"); }
+    function copyLink() { navigator.clipboard.writeText(user.refLink); showNotif("Link copied!"); }
+
+    function share(p) {
+      const text = `Join GODE! Code: ${user.refCode}\n${user.refLink}`;
+      const url = encodeURIComponent(user.refLink);
+      const msg = encodeURIComponent(text);
+      let link = '';
+      switch(p){
+        case 'whatsapp': link = `https://wa.me/?text=${msg}`; break;
+        case 'facebook': link = `https://www.facebook.com/sharer/sharer.php?u=${url}`; break;
+        case 'x': link = `https://twitter.com/intent/tweet?text=${msg}`; break;
+        case 'telegram': link = `https://t.me/share/url?url=${url}&text=${encodeURIComponent('Join GODE!')}`; break;
+        case 'email': link = `mailto:?subject=Join GODE&body=${msg}`; break;
+        case 'more': navigator.share ? navigator.share({title:'GODE',text:text,url:user.refLink}) : copyLink(); return;
+      }
+      window.open(link,'_blank');
+    }
+
+    function showNotif(msg) {
+      const n = document.getElementById('copyNotif');
+      n.innerText = msg; n.style.opacity = '1';
+      setTimeout(() => n.style.opacity = '0', 2000);
+    }
+
+    // === UI ===
+    function show(screen) {
+      Object.values(screens).forEach(s => s.classList.add('hidden'));
+      screens[screen].classList.remove('hidden');
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`.tab-btn[onclick="show('${screen}')"]`).classList.add('active');
+      if (screen === 'mining') updateMining();
+      if (screen === 'wallet') updateWallet();
+      if (screen === 'referrals') updateReferrals();
+      if (screen === 'profile') updateProfile();
+      updateDebug();
+    }
+
+    function updateMining() {
+      document.getElementById('user').innerText = user.name;
+      document.getElementById('godeNum').innerText = user.id;
+      document.getElementById('balance').innerText = balance.toFixed(4);
+      document.getElementById('totalMined').innerText = totalMined.toFixed(4);
+
+      const e = Date.now() - startTime;
+      const p = Math.min((e / DAILY_LIMIT) * 100, 100);
+      document.getElementById('progressFill').style.width = p + '%';
+
+      const r = DAILY_LIMIT - e;
+      const h = Math.floor(r / 3600000).toString().padStart(2,'0');
+      const m = Math.floor((r % 3600000) / 60000).toString().padStart(2,'0');
+      const s = Math.floor((r % 60000) / 1000).toString().padStart(2,'0');
+      document.getElementById('timeLeft').innerText = `${h}:${m}:${s}`;
+
+      if (mining && sessionStart) {
+        const sess = Math.floor((Date.now() - sessionStart) / 1000);
+        const sh = Math.floor(sess / 3600).toString().padStart(2,'0');
+        const sm = Math.floor((sess % 3600) / 60).toString().padStart(2,'0');
+        const ss = (sess % 60).toString().padStart(2,'0');
+        document.getElementById('sessionTime').innerText = `${sh}:${sm}:${ss}`;
+      }
+    }
+
+    function updateWallet() {
+      document.getElementById('walletBalance').innerText = balance.toFixed(4) + " GODE";
+      document.getElementById('pending').innerText = pending.toFixed(4) + " GODE";
+    }
+
+    function updateReferrals() {
+      document.getElementById('refCode').innerText = user.refCode;
+      document.getElementById('refLink').innerText = user.refLink;
+      document.getElementById('totalRefs').innerText = totalRefs;
+      document.getElementById('bonusEarned').innerText = bonusEarned.toFixed(4);
+    }
+
+    function updateProfile() {
+      document.getElementById('pName').innerText = user.name;
+      document.getElementById('pEmail').innerText = user.email;
+      document.getElementById('pId').innerText = user.id;
+      document.getElementById('pNet').innerText = user.net;
+      document.getElementById('pJoin').innerText = user.join;
+      document.getElementById('pStatus').innerText = "Active";
+    }
+
+    function updateAll() {
+      updateMining(); updateWallet(); updateReferrals(); updateProfile();
+    }
+
+    function withdraw() {
+      if (pending < 100) return alert(`Need 100 GODE. You have ${pending.toFixed(2)}`);
+      pending = 0; alert(`Withdrawn 100 GODE!`);
+      save(); updateAll();
+    }
+
+    // === SAVE (FIXED) ===
+    function save() {
+      const data = {user, balance, totalMined, pending, startTime, totalRefs, bonusEarned};
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        console.log("SAVED:", data);
+        updateDebug();
+      } catch(e) {
+        alert("Storage failed! Clear browser data and try again.");
+      }
+    }
+
+    setInterval(() => {
+      if (!screens.mining.classList.contains('hidden')) updateMining();
+    }, 1000);
+
+    function logout() {
+      if (confirm("Logout?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    }
+
+    // === DEBUG TOOLS ===
+    window.clearStorage = () => {
+      if (confirm("Clear all data?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    };
+  </script>
+</body>
+</html>

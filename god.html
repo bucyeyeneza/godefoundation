@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Godefroid • Gîtes de charme en Ardenne Belge</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+
+    <!-- SEO & Social -->
+    <meta name="description" content="Deux gîtes cosy à Fauvillers : Bed & Bedot (ferme en pierre) et Cocotte la Roulotte (roulotte moderne en bois). Calme absolu, forêt d’Anlier, proche Bastogne & Luxembourg.">
+    <meta property="og:title" content="Godefroid • Gîtes en Ardenne Belge">
+    <meta property="og:description" content="Escapade nature dans nos deux hébergements insolites et chaleureux à Fauvillers">
+    <meta property="og:image" content="https://godefroid.com/images/preview-og.jpg">
+    <meta property="og:url" content="https://godefroid.com">
+    <meta property="og:type" content="website">
+
+    <!-- UIkit 3 (latest 2025) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.5/dist/css/uikit.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.5/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.5/dist/js/uikit-icons.min.js"></script>
+
+    <!-- Icons (Bootstrap Icons) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Google Fonts (optionnel mais nziza) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS (uri buze kuyishyiramo ibyo ushaka) -->
+    <style>
+        :root {
+            --orange: #e67e22;
+            --orange-dark: #d35400;
+            --gray: #2c3e50;
+        }
+        body { font-family: 'Montserrat', sans-serif; background: #f8f9fa; color: var(--gray); }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+        .btn-orange { background: var(--orange); color: white; }
+        .btn-orange:hover { background: var(--orange-dark); }
+        .uk-card { transition: all 0.4s; border-radius: 12px; overflow: hidden; }
+        .uk-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .logo { object-fit: cover; height: 280px; width: 100%; }
+        .footer { background: var(--gray); color: #ecf0f1; }
+        .footer a { color: #ecf0f1; text-decoration: underline; }
+        .copyright { background: #1a252f; color: #95a5a6; }
+        .fade-in { opacity: 0; transform: translateY(30px); transition: all 1s; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<!-- HERO + GÎTES -->
+<div class="uk-section uk-section-large uk-background-cover uk-light" style="background-image: url('images/hero-ardennes.jpg');" uk-parallax="bgy: -200">
+    <div class="uk-container">
+        <div class="uk-text-center uk-margin-large-bottom fade-in">
+            <h1 class="uk-heading-large">Godefroid</h1>
+            <p class="uk-text-lead">Deux gîtes de charme au cœur de l’Ardenne belge</p>
+        </div>
+    </div>
+</div>
+
+<div class="uk-section">
+    <div class="uk-container uk-container-small">
+        <div uk-grid class="uk-child-width-1-2@s uk-grid-large" uk-scrollspy="cls: fade-in; target: .uk-card; delay: 300; repeat: false">
+            
+            <!-- Bed & Bedot -->
+            <div>
+                <div class="uk-card uk-card-default">
+                    <div class="uk-card-media-top">
+                        <img data-src="images/bed-and-bedot-gite-et-chambres-d-hotes.png" width="1800" height="1200" alt="Bed & Bedot - Gîte en pierre" uk-img class="logo">
+                    </div>
+                    <div class="uk-card-body">
+                        <h3 class="uk-card-title">Bed & Bedot</h3>
+                        <p>Gîte chaleureux de 2 à 5 personnes dans une authentique ferme ardennaise en pierre. Calme absolu, bergerie à visiter, forêt d’Anlier à deux pas.</p>
+                        <a href="https://bedandbedot.be/" target="_blank" class="uk-button btn-orange uk-button-large uk-width-1-1">Découvrir le gîte <span uk-icon="arrow-right"></span></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cocotte la Roulotte -->
+            <div>
+                <div class="uk-card uk-card-default">
+                    <div class="uk-card-media-top">
+                        <img data-src="images/logo-cocottelaroulotte.png" width="1800" height="1200" alt="Cocotte la Roulotte" uk-img class="logo">
+                    </div>
+                    <div class="uk-card-body">
+                        <h3 class="uk-card-title">Cocotte la Roulotte</h3>
+                        <p>Roulotte neuve tout en bois massif des Ardennes. Fusion parfaite entre Tiny House moderne et esprit bohème. Pour 2 à 4 personnes.</p>
+                        <a href="https://cocottelaroulotte.be/" target="_blank" class="uk-button btn-orange uk-button-large uk-width-1-1">Découvrir la roulotte <span uk-icon="arrow-right"></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer uk-section uk-section-large">
+    <div class="uk-container uk-container-small">
+        <div uk-grid class="uk-child-width-1-3@m uk-child-width-1-2@s uk-text-left">
+            
+            <div>
+                <h4><span uk-icon="icon: location"></span> Nous trouver</h4>
+                <p class="uk-margin-remove">
+                    303, rue des Lavandières<br>
+                    B-6637 Fauvillers<br>
+                    Belgique
+                </p>
+                <p class="uk-text-small">Forêt d’Anlier • Bastogne • Luxembourg</p>
+            </div>
+
+            <div>
+                <h4><span uk-icon="icon: receiver"></span> Contact</h4>
+                <ul class="uk-list uk-margin-remove">
+                    <li><span uk-icon="icon: phone"></span> <a href="tel:+32475436680">+32 475 43 66 80</a></li>
+                    <li><span uk-icon="icon: phone"></span> <a href="tel:+32498483931">+32 498 48 39 31</a></li>
+                    <li><span uk-icon="icon: mail"></span> <a href="mailto:info@bedandbedot.be">info@bedandbedot.be</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4><span uk-icon="icon: world"></span> Localisation</h4>
+                <div class="uk-height-medium">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2539.456789!2d5.6605!3d49.8833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47ea6a0af95c413d%3A0xe0c7c1a068b0e11!2s303%20Rue%20des%20Lavandi%C3%A8res%2C%206637%20Fauvillers!5e0!3m2!1sfr!2sbe!4v1730000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div class="copyright uk-padding-small">
+    <p class="uk-text-center uk-text-small">© 2025 Godefroid • Tous droits réservés — Site réalisé par <a href="https://optigroup.be" target="_blank" style="color:var(--orange)">Optigroup</a></p>
+</div>
+
+<!-- Animation au scroll -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const elements = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        elements.forEach(el => observer.observe(el));
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="rw">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GODE Network</title>
+  <meta name="theme-color" content="#00ff00">
+  <link rel="manifest" href="data:application/manifest+json,{
+    \"name\":\"GODE Network\",\"short_name\":\"GODE\",\"start_url\":\".\",
+    \"display\":\"standalone\",\"background_color\":\"#000\",\"theme_color\":\"#00ff00\",
+    \"icons\":[{\"src\":\"https://via.placeholder.com/192?text=G\",\"sizes\":\"192x192\",\"type\":\"image/png\"},
+              {\"src\":\"https://via.placeholder.com/512?text=G\",\"sizes\":\"512x512\",\"type\":\"image/png\"}]
+  }">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@400;700&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:#000;color:#0f0;font-family:'Roboto',sans-serif;height:100vh;display:flex;flex-direction:column;
+         background:radial-gradient(circle at center,#001a00 0%,#000 70%);overflow:hidden;}
+    .container{flex:1;max-width:420px;margin:0 auto;padding:20px;overflow-y:auto;}
+    .logo{width:100px;height:100px;margin:20px auto;border-radius:50%;background:conic-gradient(#0f0,#0ff,#0f0);
+         display:flex;align-items:center;justify-content:center;position:relative;
+         box-shadow:0 0 60px #0f0,0 0 120px #0ff;border:4px solid #0f0;animation:pulse 2s infinite,spin 6s linear infinite;}
+    .logo::before{content:'G';font-family:'Orbitron',sans-serif;font-size:3em;font-weight:900;color:#000;text-shadow:0 0 20px #0f0;}
+    .logo::after{content:'';position:absolute;width:70px;height:70px;border:3px solid #0ff;border-radius:50%;animation:spin 3s linear infinite reverse;}
+    .card{background:rgba(0,255,0,0.08);border:2px solid #0f0;border-radius:20px;padding:22px;margin:18px 0;
+          box-shadow:0 0 35px rgba(0,255,0,0.3);backdrop-filter:blur(5px);}
+    input{width:100%;padding:16px;margin:12px 0;border-radius:15px;border:2px solid #0f0;background:#000;color:#0f0;
+          font-size:1.2em;text-align:center;font-family:'Orbitron';transition:0.3s;outline:none;}
+    input:focus{border-color:#0ff;box-shadow:0 0 20px #0ff;}
+    button{background:#0f0;color:#000;padding:18px;font-size:1.4em;font-weight:700;border:none;border-radius:15px;
+           margin:15px 0;width:100%;cursor:pointer;box-shadow:0 0 30px #0f0;transition:0.3s;font-family:'Orbitron';} 
+    button:active{transform:scale(0.96);}
+    button.red{background:#ff0033;box-shadow:0 0 30px #f00;}
+    .circle{width:160px;height:160px;margin:25px auto;border:6px solid #0f0;border-radius:50%;display:flex;align-items:center;
+            justify-content:center;position:relative;background:radial-gradient(#001a00,#000);box-shadow:0 0 60px #0f0;
+            animation:pulse 2s infinite;}
+    .circle::before{content:'';position:absolute;width:120px;height:120px;border:3px solid #0ff;border-radius:50%;animation:spin 4s linear infinite;}
+    .balance{font-size:2.6em;font-weight:900;color:#0ff;text-align:center;}
+    .hashrate{font-size:1.6em;font-weight:900;text-align:center;}
+    .progress{height:10px;background:rgba(0,255,0,0.2);border-radius:5px;margin:18px 0;overflow:hidden;}
+    .fill{background:#0f0;height:100%;width:0%;transition:width 0.6s ease;}
+    .stats{font-size:1em;opacity:0.8;text-align:center;margin:10px 0;}
+    .tab-bar{position:fixed;bottom:0;width:100%;background:#000;border-top:2px solid #0f0;display:flex;padding:10px 0;}
+    .tab-btn{flex:1;padding:14px;background:transparent;color:#0f0;border:none;cursor:pointer;font-weight:700;}
+    .tab-btn.active{color:#000;background:#0f0;border-radius:10px;margin:0 8px;box-shadow:0 0 20px #0f0;}
+    .hidden{display:none;}
+    .copy-notif{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0f0;color:#000;padding:12px 25px;
+                 border-radius:50px;font-weight:700;z-index:1000;opacity:0;transition:0.3s;}
+    footer{font-size:0.7em;opacity:0.6;text-align:center;margin:15px 0;}
+    @keyframes pulse{0%,100%{box-shadow:0 0 60px #0f0}50%{box-shadow:0 0 90px #0ff}}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- AUTO LOGIN OR SPLASH -->
+    <div id="splash">
+      <div class="logo"></div>
+      <p class="stats">Next-Gen Mining Network</p>
+      <div class="circle">Welcome</div>
+      <button onclick="showScreen('register')">CREATE ACCOUNT</button>
+      <button style="background:#00bfff;box-shadow:0 0 30px #0ff;margin-top:10px;" onclick="showScreen('login')">LOGIN</button>
+    </div>
+
+    <!-- LOGIN (WILL BE SKIPPED IF ALREADY LOGGED IN) -->
+    <div id="login" class="hidden">
+      <div class="logo"></div>
+      <div class="card">
+        <input type="email" id="loginEmail" placeholder="Email (Gmail)" />
+        <input type="text" id="loginGodeId" placeholder="Gode ID (GD...)" />
+        <button onclick="doLogin()">LOGIN</button>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="register" class="hidden">
+      <div class="logo"></div>
+      <div class="card">
+        <input type="text" id="regName" placeholder="Full Name" />
+        <input type="email" id="regEmail" placeholder="Email (Gmail)" />
+        <input type="text" id="regGodeId" placeholder="Gode ID (GD...)" />
+        <button onclick="createAccount()">CREATE & LOGIN</button>
+      </div>
+    </div>
+
+    <!-- MAIN APP (MINING) -->
+    <div id="app" class="hidden">
+      <p class="stats">Murakaza neza, <b><span id="user">User</span></b>!</p>
+      <p class="stats">ID: <b><span id="godeId">GD...</span></b></p>
+
+      <div class="circle">
+        <div class="hashrate" id="hashrate">0.0 H/s</div>
+      </div>
+      <div class="balance" id="balance">0.0000</div>
+      <p class="stats">GODE COINS</p>
+
+      <button id="mineBtn" onclick="toggleMining()">START MINING</button>
+
+      <div class="progress"><div class="fill" id="progressFill"></div></div>
+      <p class="stats" id="timeLeft">24:00:00</p>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM TABS -->
+  <div class="tab-bar hidden" id="tabBar">
+    <button class="tab-btn active" onclick="show('app')">Mining</button>
+    <button class="tab-btn" onclick="alert('Coming soon')">Wallet</button>
+    <button class="tab-btn" onclick="alert('Coming soon')">Refer</button>
+    <button class="tab-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div id="notif" class="copy-notif">Saved!</div>
+  <footer>© 2025 GODE Network • Auto Login Fixed</footer>
+
+  <script>
+    const STORAGE_KEY = 'gode_auto_login';
+    let mining = false, hashrate = 0, balance = 0;
+    let sessionStart = 0, dailyStart = Date.now();
+
+    // Ijye ikunda mugihe wakoze account (Auto login)
+    window.onload = () => {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        window.user = data;
+        document.getElementById('user').innerText = data.name;
+        document.getElementById('godeId').innerText = data.id;
+        balance = data.balance || 0;
+        dailyStart = data.dailyStart || Date.now();
+        show('app');
+        document.getElementById('tabBar').classList.remove('hidden');
+        updateUI();
+        setTimeout(() => alert(`Murakaza neza ${data.name}! Ijambo ry'ibanga ryakorewe.`), 800);
+      }
+    };
+
+    function showScreen(screen) {
+      document.getElementById('splash').classList.add('hidden');
+      document.getElementById('login').classList.add('hidden');
+      document.getById('register').classList.add('hidden');
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById(screen).classList.remove('hidden');
+    }
+
+    function show(screen) {
+      document.getElementById('app').classList.remove('hidden');
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    // CREATE ACCOUNT → AUTO LOGIN
+    function createAccount() {
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      const id = document.getElementById('regGodeId').value.trim().toUpperCase();
+
+      if (!name || !email.includes('@gmail.com') || !id.startsWith('GD')) {
+        return alert("Shyiramo amakuru masa!");
+      }
+
+      const userData = { name, email, id, balance: 0, dailyStart: Date.now() };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+
+      alert(`Kont ya ${name} yaremwe! Ubu urinjira mu buryo bwikora.`);
+      location.reload(); // → Auto login
+    }
+
+    // MANUAL LOGIN (just in case)
+    function doLogin() {
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const id = document.getElementById('loginGodeId').value.trim().toUpperCase();
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return alert("Nta kont yabonetse!");
+
+      const data = JSON.parse(saved);
+      if (data.email === email && data.id === id) {
+        location.reload(); // Auto login will catch it
+      } else {
+        alert("Email cyangwa ID ntibihura!");
+      }
+    }
+
+    // MINING
+    function toggleMining() {
+      mining = !mining;
+      const btn = document.getElementById('mineBtn');
+      if (mining) {
+        btn.innerText = "HAGARARA"; btn.style.background = "#ff0033";
+        sessionStart = Date.now();
+        rampUp();
+        startMining();
+      } else {
+        btn.innerText = "START MINING"; btn.style.background = "#0f0";
+      }
+    }
+
+    function rampUp() {
+      const iv = setInterval(() => {
+        if (!mining) { clearInterval(iv); return; }
+        hashrate = Math.min(hashrate + 3, 120);
+        document.getElementById('hashrate').innerText = hashrate.toFixed(1) + " H/s";
+      }, 300);
+    }
+
+    function startMining() {
+      const iv = setInterval(() => {
+        if (!mining) { clearInterval(iv); return; }
+        balance += hashrate / 3600 * 0.028;
+        saveUser();
+        updateUI();
+      }, 1000);
+    }
+
+    function updateUI() {
+      document.getElementById('balance').innerText = balance.toFixed(4);
+
+      // 24h progress
+      const elapsed = Date.now() - dailyStart;
+      const percent = Math.min((elapsed / (24*60*60*1000)) * 100, 100);
+      document.getElementById('progressFill').style.width = percent + '%';
+
+      const remaining = 24*60*60*1000 - elapsed;
+      const h = String(Math.floor(remaining/3600000)).padStart(2,'0');
+      const m = String(Math.floor((remaining%3600000)/60000)).padStart(2,'0');
+      const s = String(Math.floor((remaining%60000)/1000)).padStart(2,'0');
+      document.getElementById('timeLeft').innerText = `${h}:${m}:${s}`;
+    }
+
+    function saveUser() {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      saved.balance = balance;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    }
+
+    function logout() {
+      if (confirm("Usohoka?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    }
+
+    setInterval(() => {
+      if (document.getElementById('app') && !document.getElementById('app').classList.contains('hidden')) {
+        updateUI();
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
